@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="card shadow my-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Transaction Report - Block #{{ block.index }}</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Transaction Details</h5>
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Amount</th>
+                            <td>{{ block.data.transaction.amount }}</td>
+                        </tr>
+                        <tr>
+                            <th>Sender</th>
+                            <td>{{ block.data.transaction.sender_id }} ({{ block.data.transaction.sender_country }})</td>
+                        </tr>
+                        <tr>
+                            <th>Receiver</th>
+                            <td>{{ block.data.transaction.receiver_id }} ({{ block.data.transaction.receiver_country }})</td>
+                        </tr>
+                        <tr>
+                            <th>Timestamp</th>
+                            <td>{{ block.timestamp }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h5>Analysis Results</h5>
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Fraud Probability</th>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-{% if block.data.fraud_probability > 70 %}danger{% elif block.data.fraud_probability > 30 %}warning{% else %}success{% endif %}" 
+                                         style="width: {{ block.data.fraud_probability }}%">
+                                        {{ block.data.fraud_probability }}%
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Risk Score</th>
+                            <td>{{ block.data.risk_score }}</td>
+                        </tr>
+                        <tr>
+                            <th>Final Verdict</th>
+                            <td>
+                                <span class="badge bg-{% if block.data.is_fraud %}danger{% else %}success{% endif %}">
+                                    {% if block.data.is_fraud %}FRAUD DETECTED{% else %}LEGITIMATE{% endif %}
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <h5>Risk Factors</h5>
+                {% if block.data.risk_factors %}
+                <ul class="list-group">
+                    {% for factor in block.data.risk_factors %}
+                    <li class="list-group-item list-group-item-warning">{{ factor }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="alert alert-success">No significant risk factors detected</div>
+                {% endif %}
+            </div>
+            
+            <div class="mt-4">
+                <h5>Smart Contract Compliance Check</h5>
+                {% set violations = block.data.get('compliance_violations', []) %}
+                {% if violations %}
+                <div class="alert alert-danger">
+                    <h6>Compliance Violations:</h6>
+                    <ul class="mb-0">
+                        {% for violation in violations %}
+                        <li>
+                            <strong>{{ violation.rule }}:</strong> 
+                            {{ violation.action }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% else %}
+                <div class="alert alert-success">No compliance violations detected</div>
+                {% endif %}
+            </div>
+            
+            <div class="mt-4">
+                <h5>Blockchain Verification</h5>
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <p><strong>Block Hash:</strong> <code>{{ block.hash }}</code></p>
+                        <p><strong>Previous Hash:</strong> <code>{{ block.previous_hash }}</code></p>
+                        <p class="mb-0"><strong>Verified:</strong> 
+                            <span class="badge bg-success">Valid</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <a href="/transactions" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-left"></i> Back to Blockchain
+                </a>
+                <button class="btn btn-primary ms-2" onclick="window.print()">
+                    <i class="bi bi-printer"></i> Print Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

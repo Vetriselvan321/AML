@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Transaction Analysis Results</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-{% if is_fraud %}danger{% else %}success{% endif %}">
+                        <h5 class="alert-heading">
+                            {% if is_fraud %}
+                                <i class="bi bi-exclamation-triangle-fill"></i> Fraud Detected
+                            {% else %}
+                                <i class="bi bi-check-circle-fill"></i> No Fraud Detected
+                            {% endif %}
+                        </h5>
+                        <p class="mb-0">
+                            Fraud Probability: <strong>{{ fraud_prob }}%</strong>
+                        </p>
+                    </div>
+
+                    <h5 class="mt-4">Transaction Details</h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th>Amount</th>
+                                    <td>{{ transaction.amount }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Sender Balance</th>
+                                    <td>{{ transaction.sender_balance }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Receiver Balance</th>
+                                    <td>{{ transaction.receiver_balance }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Transaction Speed</th>
+                                    <td>{{ transaction.transaction_speed }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Cross-border</th>
+                                    <td>{{ 'Yes' if transaction.is_cross_border else 'No' }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% if risk_factors %}
+                    <h5 class="mt-4">Risk Factors</h5>
+                    <ul class="list-group">
+                        {% for factor in risk_factors %}
+                        <li class="list-group-item list-group-item-warning">{{ factor }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    <div class="mt-4">
+                        <p class="text-muted">
+                            <small>
+                                Block #{{ block_index }} | 
+                                <a href="/transactions" class="text-decoration-none">View in Blockchain</a>
+                            </small>
+                        </p>
+                    </div>
+
+                    <div class="mt-4">
+                        <a href="/analyze" class="btn btn-outline-primary">
+                            <i class="bi bi-arrow-repeat"></i> Analyze Another Transaction
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

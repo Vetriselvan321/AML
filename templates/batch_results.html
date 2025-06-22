@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="my-4">Batch Processing Results</h2>
+    
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Amount</th>
+                            <th>Sender → Receiver</th>
+                            <th>Fraud Probability</th>
+                            <th>Result</th>
+                            <th>Block</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for result in results %}
+                        <tr>
+                            <td>{{ result.transaction.amount }}</td>
+                            <td>
+                                {{ result.transaction.sender_country }} ({{ result.transaction.sender_id|truncate(5) }}) 
+                                → 
+                                {{ result.transaction.receiver_country }} ({{ result.transaction.receiver_id|truncate(5) }})
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-{% if result.fraud_probability > 70 %}danger{% elif result.fraud_probability > 30 %}warning{% else %}success{% endif %}" 
+                                         style="width: {{ result.fraud_probability }}%">
+                                        {{ result.fraud_probability }}%
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-{% if result.is_fraud %}danger{% else %}success{% endif %}">
+                                    {% if result.is_fraud %}Fraud{% else %}Legitimate{% endif %}
+                                </span>
+                            </td>
+                            <td>#{{ result.block_index }}</td>
+                        </tr>
+                        {% if result.risk_factors %}
+                        <tr>
+                            <td colspan="5">
+                                <strong>Risk Factors:</strong>
+                                <ul class="mb-0">
+                                    {% for factor in result.risk_factors %}
+                                    <li>{{ factor }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="mt-4">
+                <a href="/upload" class="btn btn-primary">
+                    <i class="bi bi-arrow-left"></i> Upload Another File
+                </a>
+                <a href="/transactions" class="btn btn-outline-secondary ms-2">
+                    <i class="bi bi-link-45deg"></i> View Blockchain
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

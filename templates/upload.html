@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card shadow">
+    <div class="card-header bg-primary text-white">
+        <h4>Batch Import</h4>
+    </div>
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data" action="/upload">
+            <div class="mb-3">
+                <label for="file" class="form-label">Upload CSV File</label>
+                <input class="form-control" type="file" id="file" name="file" accept=".csv">
+            </div>
+            <button type="submit" class="btn btn-primary">Process Batch</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

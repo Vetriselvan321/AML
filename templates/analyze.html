@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="my-4">Transaction Analysis</h2>
+    <div class="card shadow">
+        <div class="card-body">
+            <form method="POST" action="/analyze">
+                <div class="row g-3">
+                    <!-- Basic Transaction Info -->
+                    <div class="col-md-4">
+                        <label for="amount" class="form-label">Amount</label>
+                        <input type="number" step="0.01" class="form-control" id="amount" name="amount" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="sender_balance" class="form-label">Sender Balance</label>
+                        <input type="number" step="0.01" class="form-control" id="sender_balance" name="sender_balance" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="receiver_balance" class="form-label">Receiver Balance</label>
+                        <input type="number" step="0.01" class="form-control" id="receiver_balance" name="receiver_balance" required>
+                    </div>
+
+                    <!-- Countries -->
+                    <div class="col-md-6">
+                        <label for="sender_country" class="form-label">Sender Country</label>
+                        <select class="form-select" id="sender_country" name="sender_country" required>
+                            <option value="US">United States</option>
+                            <option value="UK">United Kingdom</option>
+                            <option value="IN">India</option>
+                            <option value="SG">Singapore</option>
+                            <option value="CA">Canada</option>
+                            <option value="RU">Russia</option>
+                            <option value="CN">China</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="receiver_country" class="form-label">Receiver Country</label>
+                        <select class="form-select" id="receiver_country" name="receiver_country" required>
+                            <option value="US">United States</option>
+                            <option value="UK">United Kingdom</option>
+                            <option value="IN">India</option>
+                            <option value="SG">Singapore</option>
+                            <option value="CA">Canada</option>
+                            <option value="RU">Russia</option>
+                            <option value="CN">China</option>
+                        </select>
+                    </div>
+
+                    <!-- IDs -->
+                    <div class="col-md-6">
+                        <label for="sender_id" class="form-label">Sender ID</label>
+                        <input type="text" class="form-control" id="sender_id" name="sender_id">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="receiver_id" class="form-label">Receiver ID</label>
+                        <input type="text" class="form-control" id="receiver_id" name="receiver_id">
+                    </div>
+
+                    <!-- Transaction Characteristics -->
+                    <div class="col-md-4">
+                        <label for="transaction_speed" class="form-label">Transaction Speed (1-5)</label>
+                        <select class="form-select" id="transaction_speed" name="transaction_speed" required>
+                            <option value="1">1 - Instant</option>
+                            <option value="2">2 - Very Fast</option>
+                            <option value="3" selected>3 - Normal</option>
+                            <option value="4">4 - Slow</option>
+                            <option value="5">5 - Very Slow</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="transaction_frequency" class="form-label">Transactions in Last Hour</label>
+                        <input type="number" class="form-control" id="transaction_frequency" name="transaction_frequency" value="1" min="1">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="time_since_last_tx" class="form-label">Minutes Since Last Tx</label>
+                        <input type="number" class="form-control" id="time_since_last_tx" name="time_since_last_tx" value="0" min="0">
+                    </div>
+
+                    <!-- Risk Flags -->
+                    <div class="col-md-6">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="high_risk_sender" name="high_risk_sender" value="1">
+                            <label class="form-check-label" for="high_risk_sender">High Risk Sender</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="high_risk_receiver" name="high_risk_receiver" value="1">
+                            <label class="form-check-label" for="high_risk_receiver">High Risk Receiver</label>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-search"></i> Analyze Transaction
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

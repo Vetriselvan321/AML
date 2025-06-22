@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="my-4">AML Dashboard</h2>
+    
+    <div class="row">
+        <!-- Transaction Overview -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Transaction Overview</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="txChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Risk Distribution -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Risk Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="riskChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Activity -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Recent Suspicious Activity</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Block #</th>
+                                    <th>Amount</th>
+                                    <th>Sender → Receiver</th>
+                                    <th>Risk Score</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for block in chain[-5:]|reverse %}
+                                {% if block.data.get('is_fraud') or (block.data.get('risk_score', 0) > 50) %}
+                                <tr>
+                                    <td>{{ block.index }}</td>
+                                    <td>{{ block.data.transaction.amount }}</td>
+                                    <td>
+                                        {{ block.data.transaction.sender_country }} → 
+                                        {{ block.data.transaction.receiver_country }}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{% if block.data.get('risk_score', 0) > 70 %}danger{% else %}warning{% endif %}">
+                                            {{ block.data.risk_score }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="/report/{{ block.index }}" class="btn btn-sm btn-outline-primary">
+                                            View Report
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Transaction Chart
+    const txCtx = document.getElementById('txChart').getContext('2d');
+    new Chart(txCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Legitimate', 'Fraudulent'],
+            datasets: [{
+                data: [{{ legit_count }}, {{ fraud_count }}],
+                backgroundColor: [
+                    'rgba(40, 167, 69, 0.8)',
+                    'rgba(220, 53, 69, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(40, 167, 69, 1)',
+                    'rgba(220, 53, 69, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    // Risk Chart
+    const riskCtx = document.getElementById('riskChart').getContext('2d');
+    const riskData = {
+        labels: ['Low', 'Medium', 'High'],
+        datasets: [{
+            label: 'Transactions by Risk Level',
+            data: [
+            {{ low_risk }}, {{ med_risk }}, {{ high_risk }}
+            ],
+            backgroundColor: [
+                'rgba(40, 167, 69, 0.8)',
+                'rgba(255, 193, 7, 0.8)',
+                'rgba(220, 53, 69, 0.8)'
+            ],
+            borderColor: [
+                'rgba(40, 167, 69, 1)',
+                'rgba(255, 193, 7, 1)',
+                'rgba(220, 53, 69, 1)'
+            ],
+            borderWidth: 1
+        }]
+    };
+    
+    new Chart(riskCtx, {
+        type: 'bar',
+        data: riskData,
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

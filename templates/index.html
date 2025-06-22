@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto text-center mb-4">
+        <h1 class="display-4">Anti-Money Laundering System</h1>
+        <p class="lead">Blockchain-powered fraud detection using machine learning</p>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Stats Card 1 -->
+    <div class="col-md-4 mb-4">
+        <div class="card shadow">
+            <div class="card-body text-center">
+                <h5 class="card-title">Total Transactions</h5>
+                <h2 class="display-5">{{ stats.total_transactions }}</h2>
+                <p class="text-muted">Processed transactions</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Card 2 -->
+    <div class="col-md-4 mb-4">
+        <div class="card shadow">
+            <div class="card-body text-center">
+                <h5 class="card-title">Fraudulent Transactions</h5>
+                <h2 class="display-5 text-danger">{{ stats.fraud_count }}</h2>
+                <p class="text-muted">Detected cases</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Card 3 -->
+    <div class="col-md-4 mb-4">
+        <div class="card shadow">
+            <div class="card-body text-center">
+                <h5 class="card-title">Last Block</h5>
+                <h2 class="display-5">#{{ stats.last_block.index if stats.last_block else 0 }}</h2>
+                <p class="text-muted">Most recent analysis</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <a href="/analyze" class="btn btn-primary btn-lg w-100 mb-3">
+                    <i class="bi bi-search"></i> Analyze Transaction
+                </a>
+                <a href="/transactions" class="btn btn-outline-secondary btn-lg w-100">
+                    <i class="bi bi-link-45deg"></i> View Blockchain
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                {% if stats.last_block %}
+                <div class="alert alert-info">
+                    <strong>Last Transaction:</strong>
+                    {% if stats.last_block and stats.last_block.data.transaction %}
+                        <p class="mb-1">Amount: {{ stats.last_block.data.transaction.amount }}</p>
+                        <p class="mb-1">Sender: {{ stats.last_block.data.transaction.sender_id }}</p>
+                        <p class="mb-1">Receiver: {{ stats.last_block.data.transaction.receiver_id }}</p>
+                        <p class="mb-1">Fraud Probability: {{ stats.last_block.data.fraud_probability }}%</p>
+                        {% else %}
+                        <p class="mb-1 text-muted">No recent transaction data available.</p>
+                        {% endif %}
+
+                    <p class="mb-1">Fraud Probability: {{ stats.last_block.data.fraud_probability }}%</p>
+                    <p class="mb-0">Result: {{ 'Fraud' if stats.last_block.data.is_fraud else 'Legitimate' }}</p>
+                </div>
+                {% else %}
+                <p>No transactions yet</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
